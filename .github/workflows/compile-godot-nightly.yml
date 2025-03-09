@@ -190,22 +190,15 @@ jobs:
           ANDROID_NDK_ROOT: ${{ env.ANDROID_NDK_HOME }}
         run: |
 
-          scons platform=android arch=arm32 production=yes target=template_debug
+          scons platform=android arch=arm32 production=yes target=template_debug && scons platform=android arch=arm64 production=yes target=template_debug && scons platform=android arch=x86_32 production=yes target=template_debug && scons platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
 
-          scons platform=android arch=arm64 production=yes target=template_debug
+          #scons platform=android arch=arm64 production=yes target=template_debug
 
-          scons platform=android arch=x86_32 production=yes target=template_debug
+          #scons platform=android arch=x86_32 production=yes target=template_debug
 
-          scons platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
+          #scons platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
 
-          scons platform=android arch=arm32 production=yes target=template_release
-
-          scons platform=android arch=arm64 production=yes target=template_release
-
-          scons platform=android arch=x86_32 production=yes target=template_release
-
-          scons platform=android arch=x86_64 production=yes target=template_releas generate_apk=yes
-
+          scons platform=android arch=arm32 production=yes target=template_release && scons platform=android arch=arm64 production=yes target=template_release && scons platform=android arch=x86_32 production=yes target=template_release && scons platform=android arch=x86_64 production=yes target=template_release generate_apk=yes
 
       #- name: Generate Android Editor/APKs
       #  run: |
