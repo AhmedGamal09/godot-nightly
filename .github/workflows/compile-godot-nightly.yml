@@ -6,7 +6,7 @@ on: workflow_dispatch
 jobs:
   compile-windows:
     name: Compile Windows Editor & Templates
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout Godot repository
@@ -18,9 +18,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
+
       - name: Setup mingwa
-        run: 
-          sudo apt install mingw-w64
+        uses: msys2/setup-msys2@v2
+        with: 
+          install: mingw-w64-x86_64-gcc mingw-w64-i686-gcc
+          path-type: inherit  # Add to system PATH
+          update: true
+          msystem: MINGW64
       
       
       - name: Setup dependencies
@@ -71,20 +77,24 @@ jobs:
         run: |
           pip install scons
           python ./misc/scripts/install_d3d12_sdk_windows.py
-          sudo update-alternatives --list x86_64-w64-mingw32-g++
+          #sudo update-alternatives --list x86_64-w64-mingw32-g++
 
-          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          #sudo update-alternatives --list x86_64-w64-mingw32-gcc
+
+          #sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+
           # Add other Windows dependencies here if needed
 
       - name: Build Windows Editor
         run: |
+          cd D:\a\godot-nightly\godot-nightly
           python ./misc/scripts/install_d3d12_sdk_windows.py
           scons platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=editor
 
       - name: Build Windows Templates
         run: |
-          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=template_debug
-          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=template_release
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=template_debug
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=template_release
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -207,4 +217,7 @@ jobs:
         with:
           name: godot-android-templates
           path: |
-            bin/
+            bin/android_release.apk
+            bin/android_debug.apk
+            bin/android_dev.apk
+            bin/android_source.zip
