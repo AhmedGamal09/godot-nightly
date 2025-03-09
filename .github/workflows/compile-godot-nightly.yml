@@ -20,6 +20,14 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
+      - name: Install MinGW
+        uses: msys2/setup-msys2@v2
+        with:
+          install: mingw-w64-x86_64-gcc mingw-w64-i686-gcc  # 64-bit and 32-bit toolchains
+          path-type: inherit  # Add to system PATH
+          update: true
+          msystem: MINGW64
       
       - name: Setup dependencies
         shell: bash
@@ -65,9 +73,7 @@ jobs:
             popd
           fi
         
-      - name: Get CPU count
-        id: cpu_count
-        run: echo "CPU_COUNT=$(echo %NUMBER_OF_PROCESSORS%)", >> $GITHUB_ENV
+
 
       - name: Install dependencies
         run: |
@@ -76,12 +82,12 @@ jobs:
 
       - name: Build Windows Editor
         run: |
-          scons -j${{ env.CPU_COUNT }} verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/angle mesa_libs=/mesa d3d12=yes target=editor
+          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/angle mesa_libs=/mesa d3d12=yes target=editor
 
       - name: Build Windows Templates
         run: |
-          scons -j${{ env.CPU_COUNT }} verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/angle mesa_libs=/mesa d3d12=yes target=template_debug
-          scons -j${{ env.CPU_COUNT }} verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/angle mesa_libs=/mesa d3d12=yes target=template_release
+          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/angle mesa_libs=/mesa d3d12=yes target=template_debug
+          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/angle mesa_libs=/mesa d3d12=yes target=template_release
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -111,6 +117,11 @@ jobs:
           repository: godotengine/godot
           # Add ref if targeting specific branch/tag:
           # ref: 4.2-stable
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -133,6 +144,11 @@ jobs:
             "cmake;3.22.1" \
             "ndk;23.2.8568313"
 
+      - name: Install dependencies
+        run: |
+          pip install scons
+          # Add other Windows dependencies here if needed
+
       - name: Build Android Templates
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
@@ -145,7 +161,7 @@ jobs:
             x86_64) ARCH=x86_64 ;;
           esac
 
-          scons -j${{ env.CPU_COUNT }} platform=android \
+          scons  platform=android \
                 arch=${ARCH} \
                 target=template_${{ matrix.target }} \
                 production=yes
