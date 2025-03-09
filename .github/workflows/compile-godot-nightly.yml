@@ -71,12 +71,14 @@ jobs:
         run: |
           pip3 install scons
           python ./misc/scripts/install_d3d12_sdk_windows.py
-          
+
           sudo update-alternatives --list x86_64-w64-mingw32-g++
 
           sudo update-alternatives --list x86_64-w64-mingw32-gcc
 
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+
+          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
 
           # Add other Windows dependencies here if needed
 
