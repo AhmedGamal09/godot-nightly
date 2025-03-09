@@ -54,6 +54,14 @@ jobs:
           7z x godot-swappy.7z && rm godot-swappy.7z
           popd
         
+      - name: Verify dependencies
+        shell: bash
+        run: |
+          echo "ANGLE libraries:"
+          ls -l deps/angle
+          echo "Mesa libraries:"
+          ls -l deps/mesa
+
       - name: Install dependencies
         run: |
           pip install scons
