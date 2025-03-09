@@ -101,12 +101,6 @@ jobs:
         arch: [arm32, arm64, x86_32, x86_64]
         target: [debug, release]
 
-    env:
-      STORE_RELEASE: "no"
-      GODOT_ANDROID_SIGN_KEYSTORE: ${{ secrets.GODOT_ANDROID_SIGN_KEYSTORE }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-
     steps:
       - name: Checkout Godot repository
         uses: actions/checkout@v4
@@ -195,26 +189,32 @@ jobs:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
           ANDROID_NDK_ROOT: ${{ env.ANDROID_NDK_HOME }}
         run: |
-          case "${{ matrix.arch }}" in
-            arm32) ARCH=arm32 ;;
-            arm64) ARCH=arm64 ;;
-            x86_32) ARCH=x86_32 ;;
-            x86_64) ARCH=x86_64 ;;
-          esac
 
-          scons  platform=android \
-                arch=${ARCH} \
-                target=template_${{ matrix.target }} \
-                production=yes
+          scons platform=android arch=arm32 production=yes target=template_debug
 
-      - name: Generate Android Editor/APKs
-        run: |
-          cd platform/android/java
-          ./gradlew generateGodotTemplates
+          scons platform=android arch=arm64 production=yes target=template_debug
+
+          scons platform=android arch=x86_32 production=yes target=template_debug
+
+          scons platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
+
+          scons platform=android arch=arm32 production=yes target=template_release
+
+          scons platform=android arch=arm64 production=yes target=template_release
+
+          scons platform=android arch=x86_32 production=yes target=template_release
+
+          scons platform=android arch=x86_64 production=yes target=template_releas generate_apk=yes
+
+
+      #- name: Generate Android Editor/APKs
+      #  run: |
+      #    cd platform/android/java
+      #    ./gradlew generateGodotTemplates
 
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: godot-android-${{ matrix.arch }}-${{ matrix.target }}
+          name: godot-android-templates-${{ matrix.target }}
           path: |
             bin/
