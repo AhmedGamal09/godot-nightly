@@ -84,7 +84,7 @@ jobs:
           scons -j${{ env.CPU_COUNT }} verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/angle mesa_libs=/mesa d3d12=yes target=template_release
 
       - name: Upload Windows Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: godot-windows-${{ github.sha }}
           path: |
@@ -156,7 +156,7 @@ jobs:
           ./gradlew generateGodotTemplates
 
       - name: Upload Android Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: godot-android-${{ matrix.arch }}-${{ matrix.target }}
           path: |
