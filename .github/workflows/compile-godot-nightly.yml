@@ -6,7 +6,7 @@ on: workflow_dispatch
 jobs:
   compile-windows:
     name: Compile Windows Editor & Templates
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Checkout Godot repository
