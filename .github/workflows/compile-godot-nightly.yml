@@ -84,6 +84,8 @@ jobs:
 
       - name: Build Windows Editor
         run: |
+          ls D:\a\godot-nightly\godot-nightly
+          cd D:\a\godot-nightly\godot-nightly
           python ./misc/scripts/install_d3d12_sdk_windows.py
           scons platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="/deps/angle" mesa_libs="/deps/mesa" d3d12=yes target=editor
 
