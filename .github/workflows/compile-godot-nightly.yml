@@ -12,9 +12,7 @@ jobs:
       - name: Checkout Godot repository
         uses: actions/checkout@v4
         with:
-          repository: godotengine/godot  # Official repo
-          # For your own fork, use: your-username/godot
-          # To target a specific branch: ref: your-branch
+          repository: godotengine/godot
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -69,9 +67,6 @@ jobs:
             popd
           fi
         
-      #- name: Setup Python and SCons
-      #  uses: ./.github/actions/godot-deps
-
       - name: Install dependencies
         run: |
           pip install scons
@@ -81,12 +76,12 @@ jobs:
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
           # Add other Windows dependencies here if needed
 
-      #- name: Build Windows Editor
-      #  run: |
-      #    ls D:\a\godot-nightly\godot-nightly
-      #    cd D:\a\godot-nightly\godot-nightly
-      #    python ./misc/scripts/install_d3d12_sdk_windows.py
-      #    scons platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" mesa_libs="drivers/d3d12/drivers/d3d12/deps/mesa" d3d12=yes target=editor
+      - name: Build Windows Editor
+        run: |
+          ls D:\a\godot-nightly\godot-nightly
+          cd D:\a\godot-nightly\godot-nightly
+          python ./misc/scripts/install_d3d12_sdk_windows.py
+          scons platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=editor
 
       - name: Build Windows Templates
         run: |
@@ -97,5 +92,131 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: godot-windows-${{ github.sha }}
+          path: |
+            bin/
+
+  compile-android:
+    name: Compile Android Editor & Templates
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [arm32, arm64, x86_32, x86_64]
+        target: [debug, release]
+
+    env:
+      STORE_RELEASE: "no"
+      GODOT_ANDROID_SIGN_KEYSTORE: ${{ secrets.GODOT_ANDROID_SIGN_KEYSTORE }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+
+    steps:
+      - name: Checkout Godot repository
+        uses: actions/checkout@v4
+        with:
+          repository: godotengine/godot
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Setup dependencies
+        shell: bash
+        run: |
+          set -e
+          if [ ! -d "angle" ]; then
+            echo "Missing ANGLE libraries, downloading them."
+            mkdir -p angle
+            pushd angle
+            base_url=https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static
+            curl -L -o windows_arm64.zip $base_url-arm64-llvm-release.zip
+            curl -L -o windows_x86_64.zip $base_url-x86_64-gcc-release.zip
+            curl -L -o windows_x86_32.zip $base_url-x86_32-gcc-release.zip
+            curl -L -o macos_arm64.zip $base_url-arm64-macos-release.zip
+            curl -L -o macos_x86_64.zip $base_url-x86_64-macos-release.zip
+            unzip -o windows_arm64.zip && rm -f windows_arm64.zip
+            unzip -o windows_x86_64.zip && rm -f windows_x86_64.zip
+            unzip -o windows_x86_32.zip && rm -f windows_x86_32.zip
+            unzip -o macos_arm64.zip && rm -f macos_arm64.zip
+            unzip -o macos_x86_64.zip && rm -f macos_x86_64.zip
+            popd
+          fi
+  
+          if [ ! -d "mesa" ]; then
+            echo "Missing Mesa/NIR libraries, downloading them."
+            mkdir -p mesa
+            pushd mesa
+            curl -L -o mesa_arm64.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-arm64-llvm-release.zip
+            curl -L -o mesa_x86_64.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
+            curl -L -o mesa_x86_32.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_32-gcc-release.zip
+            unzip -o mesa_arm64.zip && rm -f mesa_arm64.zip
+            unzip -o mesa_x86_64.zip && rm -f mesa_x86_64.zip
+            unzip -o mesa_x86_32.zip && rm -f mesa_x86_32.zip
+            popd
+          fi
+
+          if [ ! -d "swappy" ]; then
+            echo "Missing Swappy libraries, downloading them."
+            mkdir -p thirdparty/swappy-frame-pacing
+            pushd thirdparty/swappy-frame-pacing
+            curl -L -O https://github.com/godotengine/godot-swappy/releases/download/from-source-2025-01-31/godot-swappy.7z
+            7z x godot-swappy.7z && rm godot-swappy.7z
+            popd
+          fi
+
+
+      - name: Setup Android SDK/NDK
+        uses: android-actions/setup-android@v2
+        with:
+          ndk-version: 23.2.8568313
+          cmdline-tools-version: 9.0
+
+      - name: Install Android dependencies
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager \
+            "build-tools;34.0.0" \
+            "platform-tools" \
+            "platforms;android-34" \
+            "cmake;3.22.1" \
+            "ndk;23.2.8568313"
+
+      - name: Install dependencies
+        run: |
+          pip install scons
+          # Add other Windows dependencies here if needed
+
+      - name: Build Android Templates
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_NDK_ROOT: ${{ env.ANDROID_NDK_HOME }}
+        run: |
+          case "${{ matrix.arch }}" in
+            arm32) ARCH=arm32 ;;
+            arm64) ARCH=arm64 ;;
+            x86_32) ARCH=x86_32 ;;
+            x86_64) ARCH=x86_64 ;;
+          esac
+
+          scons  platform=android \
+                arch=${ARCH} \
+                target=template_${{ matrix.target }} \
+                production=yes
+
+      - name: Generate Android Editor/APKs
+        run: |
+          cd platform/android/java
+          ./gradlew generateGodotTemplates
+
+      - name: Upload Android Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-android-${{ matrix.arch }}-${{ matrix.target }}
           path: |
             bin/
