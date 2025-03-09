@@ -22,7 +22,7 @@ jobs:
           python-version: '3.10'
       - name: Setup mingwa
         run: 
-          apt install mingw-w64
+          sudo apt install mingw-w64
       
       
       - name: Setup dependencies
