@@ -76,6 +76,9 @@ jobs:
         run: |
           pip install scons
           python ./misc/scripts/install_d3d12_sdk_windows.py
+          sudo update-alternatives --list x86_64-w64-mingw32-g++
+
+          #sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-win32
           # Add other Windows dependencies here if needed
 
       #- name: Build Windows Editor
