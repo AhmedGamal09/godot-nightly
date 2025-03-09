@@ -35,8 +35,8 @@ jobs:
           set -e
           if [ ! -d "angle" ]; then
             echo "Missing ANGLE libraries, downloading them."
-            mkdir -p angle
-            pushd angle
+            mkdir -p deps/angel
+            pushd deps/angle
             base_url=https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static
             curl -L -o windows_arm64.zip $base_url-arm64-llvm-release.zip
             curl -L -o windows_x86_64.zip $base_url-x86_64-gcc-release.zip
@@ -53,8 +53,8 @@ jobs:
   
           if [ ! -d "mesa" ]; then
             echo "Missing Mesa/NIR libraries, downloading them."
-            mkdir -p mesa
-            pushd mesa
+            mkdir -p deps/mesa
+            pushd deps/mesa
             curl -L -o mesa_arm64.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-arm64-llvm-release.zip
             curl -L -o mesa_x86_64.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
             curl -L -o mesa_x86_32.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_32-gcc-release.zip
@@ -83,12 +83,12 @@ jobs:
 
       - name: Build Windows Editor
         run: |
-          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=angle mesa_libs=mesa d3d12=yes target=editor
+          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="/deps/angel" mesa_libs="/deps/mesa" d3d12=yes target=editor
 
       - name: Build Windows Templates
         run: |
-          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=angle mesa_libs=mesa d3d12=yes target=template_debug
-          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=angle mesa_libs=mesa d3d12=yes target=template_release
+          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="/deps/angel" mesa_libs="/deps/mesa" d3d12=yes target=template_debug
+          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="/deps/angel" mesa_libs="/deps/mesa" d3d12=yes target=template_release
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
