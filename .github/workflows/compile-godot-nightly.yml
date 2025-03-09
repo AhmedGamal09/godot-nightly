@@ -78,6 +78,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install scons
+          python misc\scripts\install_d3d12_sdk_windows.py
           # Add other Windows dependencies here if needed
 
       - name: Build Windows Editor
@@ -127,6 +128,51 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
+      - name: Setup dependencies
+        shell: bash
+        run: |
+          set -e
+          if [ ! -d "angle" ]; then
+            echo "Missing ANGLE libraries, downloading them."
+            mkdir -p angle
+            pushd angle
+            base_url=https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static
+            curl -L -o windows_arm64.zip $base_url-arm64-llvm-release.zip
+            curl -L -o windows_x86_64.zip $base_url-x86_64-gcc-release.zip
+            curl -L -o windows_x86_32.zip $base_url-x86_32-gcc-release.zip
+            curl -L -o macos_arm64.zip $base_url-arm64-macos-release.zip
+            curl -L -o macos_x86_64.zip $base_url-x86_64-macos-release.zip
+            unzip -o windows_arm64.zip && rm -f windows_arm64.zip
+            unzip -o windows_x86_64.zip && rm -f windows_x86_64.zip
+            unzip -o windows_x86_32.zip && rm -f windows_x86_32.zip
+            unzip -o macos_arm64.zip && rm -f macos_arm64.zip
+            unzip -o macos_x86_64.zip && rm -f macos_x86_64.zip
+            popd
+          fi
+  
+          if [ ! -d "mesa" ]; then
+            echo "Missing Mesa/NIR libraries, downloading them."
+            mkdir -p mesa
+            pushd mesa
+            curl -L -o mesa_arm64.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-arm64-llvm-release.zip
+            curl -L -o mesa_x86_64.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
+            curl -L -o mesa_x86_32.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_32-gcc-release.zip
+            unzip -o mesa_arm64.zip && rm -f mesa_arm64.zip
+            unzip -o mesa_x86_64.zip && rm -f mesa_x86_64.zip
+            unzip -o mesa_x86_32.zip && rm -f mesa_x86_32.zip
+            popd
+          fi
+
+          if [ ! -d "swappy" ]; then
+            echo "Missing Swappy libraries, downloading them."
+            mkdir -p swappy
+            pushd swappy
+            curl -L -O https://github.com/godotengine/godot-swappy/releases/download/from-source-2025-01-31/godot-swappy.7z
+            7z x godot-swappy.7z && rm godot-swappy.7z
+            popd
+          fi
+
 
       - name: Setup Android SDK/NDK
         uses: android-actions/setup-android@v2
