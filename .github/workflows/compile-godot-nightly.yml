@@ -96,10 +96,6 @@ jobs:
   compile-android:
     name: Compile Android Editor & Templates
     runs-on: macos-latest
-    strategy:
-      matrix:
-        arch: [arm32, arm64, x86_32, x86_64]
-        target: [debug, release]
 
     steps:
       - name: Checkout Godot repository
@@ -183,22 +179,23 @@ jobs:
         run: |
           pip install scons
           # Add other Windows dependencies here if needed
-
+      
+      
       - name: Build Android Templates
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
           ANDROID_NDK_ROOT: ${{ env.ANDROID_NDK_HOME }}
         run: |
 
-          scons platform=android arch=arm32 production=yes target=template_debug && scons platform=android arch=arm64 production=yes target=template_debug && scons platform=android arch=x86_32 production=yes target=template_debug && scons platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
+          scons platform=android arch=arm32 production=yes target=template_debug
+          scons platform=android arch=arm64 production=yes target=template_debug
+          scons platform=android arch=x86_32 production=yes target=template_debug 
+          scons platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
 
-          #scons platform=android arch=arm64 production=yes target=template_debug
-
-          #scons platform=android arch=x86_32 production=yes target=template_debug
-
-          #scons platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
-
-          scons platform=android arch=arm32 production=yes target=template_release && scons platform=android arch=arm64 production=yes target=template_release && scons platform=android arch=x86_32 production=yes target=template_release && scons platform=android arch=x86_64 production=yes target=template_release generate_apk=yes
+          scons platform=android arch=arm32 production=yes target=template_release
+          scons platform=android arch=arm64 production=yes target=template_release
+          scons platform=android arch=x86_32 production=yes target=template_release
+          scons platform=android arch=x86_64 production=yes target=template_release generate_apk=yes
 
       #- name: Generate Android Editor/APKs
       #  run: |
@@ -208,6 +205,6 @@ jobs:
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: godot-android-templates-${{ matrix.target }}
+          name: godot-android-templates
           path: |
             bin/
