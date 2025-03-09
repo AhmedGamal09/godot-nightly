@@ -6,7 +6,7 @@ on: workflow_dispatch
 jobs:
   compile-windows:
     name: Compile Windows Editor & Templates
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Godot repository
@@ -30,7 +30,7 @@ jobs:
 
       - name: Requirements install
         run: |
-          brew install mingw-w64 scons p7zip curl
+          sudo apt install g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64
           
       
       
@@ -71,11 +71,12 @@ jobs:
         run: |
           pip3 install scons
           python ./misc/scripts/install_d3d12_sdk_windows.py
-          #sudo update-alternatives --list x86_64-w64-mingw32-g++
+          
+          sudo update-alternatives --list x86_64-w64-mingw32-g++
 
-          #sudo update-alternatives --list x86_64-w64-mingw32-gcc
+          sudo update-alternatives --list x86_64-w64-mingw32-gcc
 
-          #sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
 
           # Add other Windows dependencies here if needed
 
