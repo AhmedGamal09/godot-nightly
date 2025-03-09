@@ -53,8 +53,8 @@ jobs:
   
           if [ ! -d "mesa" ]; then
             echo "Missing Mesa/NIR libraries, downloading them."
-            mkdir -p drivers/d3d12/deps/mesa
-            pushd drivers/d3d12/deps/mesa
+            mkdir -p drivers/d3d12/drivers/d3d12/deps/mesa
+            pushd drivers/d3d12/drivers/d3d12/deps/mesa
             curl -L -o mesa_arm64.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-arm64-llvm-release.zip
             curl -L -o mesa_x86_64.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
             curl -L -o mesa_x86_32.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_32-gcc-release.zip
@@ -87,13 +87,13 @@ jobs:
       #    ls D:\a\godot-nightly\godot-nightly
       #    cd D:\a\godot-nightly\godot-nightly
       #    python ./misc/scripts/install_d3d12_sdk_windows.py
-      #    scons platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" mesa_libs="drivers/d3d12/deps/mesa" d3d12=yes target=editor
+      #    scons platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" mesa_libs="drivers/d3d12/drivers/d3d12/deps/mesa" d3d12=yes target=editor
 
       - name: Build Windows Templates
         run: |
           ls D:\\a\\godot-nightly\\godot-nightly\\drivers\\d3d12\\drivers\\d3d12\\deps\\mesa\\godot-mesa
-          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" mesa_libs="drivers/d3d12/deps/mesa" d3d12=yes target=template_debug
-          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" mesa_libs="drivers/d3d12/deps/mesa" d3d12=yes target=template_release
+          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" mesa_libs="drivers/d3d12/drivers/d3d12/deps/mesa" d3d12=yes target=template_debug
+          scons  verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" mesa_libs="drivers/d3d12/drivers/d3d12/deps/mesa" d3d12=yes target=template_release
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
