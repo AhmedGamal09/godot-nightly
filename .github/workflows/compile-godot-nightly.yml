@@ -75,14 +75,14 @@ jobs:
       - name: "[Windows] Compile Godot..."        
         run: |
           cl
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=editor
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs="deps/angle" d3d12=yes target=editor
         shell: cmd
 
       - name: Build Windows Templates
         run: |
           cl
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=no angle_libs="deps/angle" d3d12=yes target=template_debug
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=no angle_libs="deps/angle" d3d12=yes target=template_release
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs="deps/angle" d3d12=yes target=template_debug
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs="deps/angle" d3d12=yes target=template_release
         shell: cmd
 
       - name: Upload Windows Artifacts
