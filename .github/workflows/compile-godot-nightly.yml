@@ -23,7 +23,7 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with: 
           platform: x64
-          version: 12.2.0
+          version: 12.0.0
 
       - name: Setup dependencies
         shell: bash
@@ -99,7 +99,7 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with: 
           platform: x64
-          version: 12.2.0
+          version: 12.0.0
                 
       - name: Setup dependencies
         shell: bash
