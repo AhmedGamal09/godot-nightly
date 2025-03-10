@@ -6,7 +6,7 @@ on: workflow_dispatch
 jobs:
   compile-windows:
     name: Compile Windows Editor & Templates
-    runs-on: ubuntu-latest
+    runs-on: windows-2022
 
     steps:
       - name: Checkout Godot repository
@@ -27,12 +27,7 @@ jobs:
       #    path-type: inherit  # Add to system PATH
       #    update: true
       #    msystem: MINGW64
-
-      - name: Requirements install
-        run: |
-          sudo apt install g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64
-          
-      
+                
       
       - name: Setup dependencies
         shell: bash
@@ -72,26 +67,23 @@ jobs:
           pip3 install scons
           python ./misc/scripts/install_d3d12_sdk_windows.py
 
-          sudo update-alternatives --list x86_64-w64-mingw32-g++
-
-          sudo update-alternatives --list x86_64-w64-mingw32-gcc
-
-          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
-
-          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
-
           # Add other Windows dependencies here if needed
 
-      - name: Build Windows Editor
+          
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: "[Windows] Compile Godot..."        
         run: |
-          #cd D:\a\godot-nightly\godot-nightly
-          python ./misc/scripts/install_d3d12_sdk_windows.py
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=no angle_libs="deps/angle" d3d12=yes target=editor
+          cl
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=editor
+        shell: cmd
 
       - name: Build Windows Templates
         run: |
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=template_debug
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=template_release
+          cl
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=no angle_libs="deps/angle" d3d12=yes target=template_debug
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=no angle_libs="deps/angle" d3d12=yes target=template_release
+        shell: cmd
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
