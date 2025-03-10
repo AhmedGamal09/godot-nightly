@@ -4,7 +4,7 @@ on: workflow_dispatch
   
 
 jobs:
-  compile-windows:
+  compile-windows-editor:
     name: Compile Windows Editor
     runs-on: windows-2022
 
@@ -85,6 +85,7 @@ jobs:
           path: |
             bin/godot.windows.editor.x86_64.exe
 
+  compile-windows-templates:
     name: Compile Windows Templates
     runs-on: windows-2022
 
