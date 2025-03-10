@@ -6,7 +6,7 @@ on: workflow_dispatch
 jobs:
   compile-windows-editor:
     name: Compile Windows Editor
-    runs-on: windows-2022
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Godot repository
@@ -54,9 +54,9 @@ jobs:
         shell: bash
         run: |
           echo "ANGLE libraries:"
-          ls -l "$PWD"/deps/angle
+          realpath deps/angle/*
           echo "Mesa libraries:"
-          ls -l "$PWD"/deps/mesa
+          realpath deps/mesa/*
 
       - name: Install dependencies
         run: |
@@ -70,7 +70,7 @@ jobs:
 
       - name: "[Windows] Compile Godot..."        
         run: |
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=editor
+          scons platform=windows lto=full arch=x86_64 production=yes use_mingw=yes angle_libs=/deps/angle mesa_libs=/deps/mesa d3d12=yes target=editor -j4
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -82,7 +82,7 @@ jobs:
 
   compile-windows-templates:
     name: Compile Windows Templates
-    runs-on: windows-2022
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Godot repository
@@ -145,10 +145,10 @@ jobs:
 
       - name: Build Windows Templates
         run: |
-          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=template_debug
-          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=template_release
-          scons verbose=yes warnings=no progress=no platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=template_debug
-          scons verbose=yes warnings=no progress=no platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=template_release
+          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/deps/angle mesa_libs=/deps/mesa d3d12=yes target=template_debug -j4
+          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/deps/angle mesa_libs=/deps/mesa d3d12=yes target=template_release -j4
+          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=/deps/angle mesa_libs=/deps/mesa d3d12=yes target=template_debug -j4
+          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=/deps/angle mesa_libs=/deps/mesa d3d12=yes target=template_release -j4
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
