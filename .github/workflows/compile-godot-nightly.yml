@@ -164,8 +164,8 @@ jobs:
         with:
           name: godot-windows-${{ github.sha }}
           path: |
-            bin/godot.windows.template_debug.x86_64.zip
-            bin/godot.windows.template_release.x86_64.zip
+            bin/godot.windows.template_debug.x86_64.exe
+            bin/godot.windows.template_release.x86_64.exe
 
   compile-android:
     name: Compile Android Editor & Templates
