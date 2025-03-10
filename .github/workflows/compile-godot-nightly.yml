@@ -60,7 +60,7 @@ jobs:
           echo "ANGLE libraries:"
           ls -l "$PWD"/deps/angle
           echo "Mesa libraries:"
-          ls -l "$PWD"deps/mesa
+          ls -l "$PWD"/deps/mesa
 
       - name: Install dependencies
         run: |
@@ -139,9 +139,9 @@ jobs:
         shell: bash
         run: |
           echo "ANGLE libraries:"
-          ls -l "$PWD"/deps/angle
+          realpath deps/angle/*
           echo "Mesa libraries:"
-          ls -l "$PWD"deps/mesa
+          realpath deps/mesa/*
 
       - name: Install dependencies
         run: |
