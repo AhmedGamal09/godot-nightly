@@ -84,6 +84,7 @@ jobs:
           name: godot-windows-${{ github.sha }}
           path: |
             bin/godot.windows.editor.x86_64.exe
+            bin/godot.windows.editor.x86_64.console.exe
 
   compile-windows-templates:
     name: Compile Windows Templates
@@ -155,8 +156,10 @@ jobs:
       - name: Build Windows Templates
         run: |
           cl
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_debug
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_release
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_debug
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_release
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_32 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_debug
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_32 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_release
         shell: cmd
 
       - name: Upload Windows Artifacts
@@ -164,8 +167,7 @@ jobs:
         with:
           name: godot-windows-${{ github.sha }}
           path: |
-            bin/godot.windows.template_debug.x86_64.exe
-            bin/godot.windows.template_release.x86_64.exe
+            bin/
 
   compile-android:
     name: Compile Android Editor & Templates
@@ -192,20 +194,6 @@ jobs:
         shell: bash
         run: |
           set -e
-          # ANGLE (Windows MinGW binaries)
-          mkdir -p deps/angle
-          pushd deps/angle
-          curl -L -o angle.zip https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static-x86_64-gcc-release.zip
-          unzip -o angle.zip && rm angle.zip
-          popd
-
-          # Mesa (Windows MinGW binaries)
-          mkdir -p deps/mesa
-          pushd deps/mesa
-          curl -L -o mesa.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
-          unzip -o mesa.zip && rm mesa.zip
-          popd
-
           if [ ! -d "swappy" ]; then
             echo "Missing Swappy libraries, downloading them."
             mkdir -p thirdparty/swappy-frame-pacing
@@ -244,15 +232,15 @@ jobs:
           ANDROID_NDK_ROOT: ${{ env.ANDROID_NDK_HOME }}
         run: |
 
-          scons platform=android arch=arm32 production=yes target=template_debug
-          scons platform=android arch=arm64 production=yes target=template_debug
-          scons platform=android arch=x86_32 production=yes target=template_debug 
-          scons platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
+          scons verbose=yes warnings=no progress=no platform=android arch=arm32 production=yes target=template_debug
+          scons verbose=yes warnings=no progress=no platform=android arch=arm64 production=yes target=template_debug
+          scons verbose=yes warnings=no progress=no platform=android arch=x86_32 production=yes target=template_debug 
+          scons verbose=yes warnings=no progress=no platform=android arch=x86_64 production=yes target=template_debug generate_apk=yes
 
-          scons platform=android arch=arm32 production=yes target=template_release
-          scons platform=android arch=arm64 production=yes target=template_release
-          scons platform=android arch=x86_32 production=yes target=template_release
-          scons platform=android arch=x86_64 production=yes target=template_release generate_apk=yes
+          scons verbose=yes warnings=no progress=no platform=android arch=arm32 production=yes target=template_release
+          scons verbose=yes warnings=no progress=no platform=android arch=arm64 production=yes target=template_release
+          scons verbose=yes warnings=no progress=no platform=android arch=x86_32 production=yes target=template_release
+          scons verbose=yes warnings=no progress=no platform=android arch=x86_64 production=yes target=template_release generate_apk=yes
 
       #- name: Generate Android Editor/APKs
       #  run: |
@@ -266,5 +254,5 @@ jobs:
           path: |
             bin/android_release.apk
             bin/android_debug.apk
-            bin/android_dev.apk
+            bin/godot-lib.template_release.aar
             bin/android_source.zip
