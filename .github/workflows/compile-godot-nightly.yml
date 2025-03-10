@@ -19,16 +19,11 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Setup mingwa
+        uses: egor-tensin/setup-mingw@v2
+        with: 
+          platform: x64
 
-      #- name: Setup mingwa
-      #  uses: msys2/setup-msys2@v2
-      #  with: 
-      #    install: mingw-w64-x86_64-gcc mingw-w64-i686-gcc
-      #    path-type: inherit  # Add to system PATH
-      #    update: true
-      #    msystem: MINGW64
-                
-      
       - name: Setup dependencies
         shell: bash
         run: |
@@ -36,14 +31,14 @@ jobs:
           # ANGLE (Windows MinGW binaries)
           mkdir -p deps/angle
           pushd deps/angle
-          curl -L -o angle.zip https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static-x86_64-msvc-release.zip
+          curl -L -o angle.zip https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static-x86_64-gcc-release.zip
           unzip -o angle.zip && rm angle.zip
           popd
 
           # Mesa (Windows MinGW binaries)
           mkdir -p deps/mesa
           pushd deps/mesa
-          curl -L -o mesa.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-msvc-release.zip
+          curl -L -o mesa.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
           unzip -o mesa.zip && rm mesa.zip
           popd
 
@@ -70,13 +65,11 @@ jobs:
           # Add other Windows dependencies here if needed
 
           
-      - uses: ilammy/msvc-dev-cmd@v1
+      #- uses: ilammy/msvc-dev-cmd@v1
 
       - name: "[Windows] Compile Godot..."        
         run: |
-          cl
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=editor
-        shell: cmd
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=editor
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -101,16 +94,11 @@ jobs:
         with:
           python-version: '3.10'
 
-
-      #- name: Setup mingwa
-      #  uses: msys2/setup-msys2@v2
-      #  with: 
-      #    install: mingw-w64-x86_64-gcc mingw-w64-i686-gcc
-      #    path-type: inherit  # Add to system PATH
-      #    update: true
-      #    msystem: MINGW64
+      - name: Setup mingwa
+        uses: egor-tensin/setup-mingw@v2
+        with: 
+          platform: x64
                 
-      
       - name: Setup dependencies
         shell: bash
         run: |
@@ -118,14 +106,14 @@ jobs:
           # ANGLE (Windows MinGW binaries)
           mkdir -p deps/angle
           pushd deps/angle
-          curl -L -o angle.zip https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static-x86_64-msvc-release.zip
+          curl -L -o angle.zip https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static-x86_64-gcc-release.zip
           unzip -o angle.zip && rm angle.zip
           popd
 
           # Mesa (Windows MinGW binaries)
           mkdir -p deps/mesa
           pushd deps/mesa
-          curl -L -o mesa.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-msvc-release.zip
+          curl -L -o mesa.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
           unzip -o mesa.zip && rm mesa.zip
           popd
 
@@ -151,16 +139,14 @@ jobs:
 
           # Add other Windows dependencies here if needed
           
-      - uses: ilammy/msvc-dev-cmd@v1
+      #- uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build Windows Templates
         run: |
-          cl
-          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_debug
-          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_release
-          scons verbose=yes warnings=no progress=no platform=windows arch=x86_32 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_debug
-          scons verbose=yes warnings=no progress=no platform=windows arch=x86_32 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_release
-        shell: cmd
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=template_debug
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=template_release
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_32 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=template_debug
+          scons verbose=yes warnings=no progress=no platform=windows arch=x86_32 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle mesa_libs=D:\a\godot-nightly\godot-nightly\deps\mesa d3d12=yes target=template_release
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
