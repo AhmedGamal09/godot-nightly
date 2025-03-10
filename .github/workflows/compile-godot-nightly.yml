@@ -76,9 +76,9 @@ jobs:
 
           sudo update-alternatives --list x86_64-w64-mingw32-gcc
 
-          #sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
 
-          #sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
 
           # Add other Windows dependencies here if needed
 
@@ -86,7 +86,7 @@ jobs:
         run: |
           #cd D:\a\godot-nightly\godot-nightly
           python ./misc/scripts/install_d3d12_sdk_windows.py
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs="deps/angle" d3d12=yes target=editor
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes use_mingw=no angle_libs="deps/angle" d3d12=yes target=editor
 
       - name: Build Windows Templates
         run: |
