@@ -151,7 +151,7 @@ jobs:
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: godot-windows-${{ github.sha }}
+          name: godot-windows-templates-${{ github.sha }}
           path: |
             bin/
 
