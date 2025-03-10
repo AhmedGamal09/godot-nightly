@@ -5,7 +5,7 @@ on: workflow_dispatch
 
 jobs:
   compile-windows:
-    name: Compile Windows Editor & Templates
+    name: Compile Windows Editor
     runs-on: windows-2022
 
     steps:
@@ -58,9 +58,9 @@ jobs:
         shell: bash
         run: |
           echo "ANGLE libraries:"
-          ls -l deps/angle
+          ls -l "$PWD"/deps/angle
           echo "Mesa libraries:"
-          ls -l deps/mesa
+          ls -l "$PWD"deps/mesa
 
       - name: Install dependencies
         run: |
@@ -75,14 +75,7 @@ jobs:
       - name: "[Windows] Compile Godot..."        
         run: |
           cl
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs="deps/angle" d3d12=yes target=editor
-        shell: cmd
-
-      - name: Build Windows Templates
-        run: |
-          cl
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs="deps/angle" d3d12=yes target=template_debug
-          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs="deps/angle" d3d12=yes target=template_release
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=editor
         shell: cmd
 
       - name: Upload Windows Artifacts
@@ -91,6 +84,85 @@ jobs:
           name: godot-windows-${{ github.sha }}
           path: |
             bin/godot.windows.editor.x86_64.exe
+
+    name: Compile Windows Templates
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout Godot repository
+        uses: actions/checkout@v4
+        with:
+          repository: godotengine/godot
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+
+      #- name: Setup mingwa
+      #  uses: msys2/setup-msys2@v2
+      #  with: 
+      #    install: mingw-w64-x86_64-gcc mingw-w64-i686-gcc
+      #    path-type: inherit  # Add to system PATH
+      #    update: true
+      #    msystem: MINGW64
+                
+      
+      - name: Setup dependencies
+        shell: bash
+        run: |
+          set -e
+          # ANGLE (Windows MinGW binaries)
+          mkdir -p deps/angle
+          pushd deps/angle
+          curl -L -o angle.zip https://github.com/godotengine/godot-angle-static/releases/download/chromium%2F6601.2/godot-angle-static-x86_64-msvc-release.zip
+          unzip -o angle.zip && rm angle.zip
+          popd
+
+          # Mesa (Windows MinGW binaries)
+          mkdir -p deps/mesa
+          pushd deps/mesa
+          curl -L -o mesa.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-msvc-release.zip
+          unzip -o mesa.zip && rm mesa.zip
+          popd
+
+          echo "Missing Swappy libraries, downloading them."
+          mkdir -p thirdparty/swappy-frame-pacing
+          pushd thirdparty/swappy-frame-pacing
+          curl -L -O https://github.com/godotengine/godot-swappy/releases/download/from-source-2025-01-31/godot-swappy.7z
+          7z x godot-swappy.7z && rm godot-swappy.7z
+          popd
+        
+      - name: Verify dependencies
+        shell: bash
+        run: |
+          echo "ANGLE libraries:"
+          ls -l "$PWD"/deps/angle
+          echo "Mesa libraries:"
+          ls -l "$PWD"deps/mesa
+
+      - name: Install dependencies
+        run: |
+          pip3 install scons
+          python ./misc/scripts/install_d3d12_sdk_windows.py
+
+          # Add other Windows dependencies here if needed
+          
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build Windows Templates
+        run: |
+          cl
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_debug
+          scons verbose=yes warnings=no progress=yes platform=windows arch=x86_64 production=yes mingw=no angle_libs=D:\a\godot-nightly\godot-nightly\deps\angle d3d12=yes target=template_release
+        shell: cmd
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-windows-${{ github.sha }}
+          path: |
             bin/godot.windows.template_debug.x86_64.zip
             bin/godot.windows.template_release.x86_64.zip
 
