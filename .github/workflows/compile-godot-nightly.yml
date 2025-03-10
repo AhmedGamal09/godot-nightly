@@ -69,7 +69,6 @@ jobs:
 
       - name: "[Windows] Compile Godot..."        
         run: |
-          python misc\scripts\install_d3d12_sdk_windows.py
           scons platform=windows lto=full arch=x86_64 production=yes use_mingw=yes angle_libs=/home/runner/work/godot-nightly/godot-nightly/deps/angle mesa_libs=/home/runner/work/godot-nightly/godot-nightly/deps/mesa d3d12=yes target=editor -j4
 
       - name: Upload Windows Artifacts
