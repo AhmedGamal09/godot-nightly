@@ -164,6 +164,22 @@ jobs:
           scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=/home/runner/work/godot-nightly/godot-nightly/deps/angle mesa_libs=/home/runner/work/godot-nightly/godot-nightly/deps/mesa d3d12=yes target=template_debug -j4
           scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=/home/runner/work/godot-nightly/godot-nightly/deps/angle mesa_libs=/home/runner/work/godot-nightly/godot-nightly/deps/mesa d3d12=yes target=template_release -j4
 
+      - name: Copy Godot binaries
+        shell: bash
+        run: |
+          cp -f bin/godot.windows.template_release.x86_64.exe bin/windows_release_x86_64.exe || true
+          cp -f bin/godot.windows.template_debug.x86_64.exe bin/windows_debug_x86_64.exe || true
+          cp -f bin/godot.windows.template_release.x86_32.exe bin/windows_release_x86_32.exe || true
+          cp -f bin/godot.windows.template_debug.x86_32.exe bin/windows_debug_x86_32.exe || true
+          cp -f bin/godot.windows.template_release.x86_64.console.exe bin/windows_release_x86_64_console.exe || true
+          cp -f bin/godot.windows.template_debug.x86_64.console.exe bin/windows_debug_x86_64_console.exe || true
+          cp -f bin/godot.windows.template_release.x86_32.console.exe bin/windows_release_x86_32_console.exe || true
+          cp -f bin/godot.windows.template_debug.x86_32.console.exe bin/windows_debug_x86_32_console.exe || true
+
+      - name: Verify files
+        shell: bash
+        run: ls -l bin/*.exe
+
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
