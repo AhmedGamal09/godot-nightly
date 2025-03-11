@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: godotengine/godot
-          ref: ${{ input.commit_sha }}
+          ref: ${{ github.event.inputs.commit_sha }}
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -99,7 +99,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: godotengine/godot
-          ref: ${{ input.commit_sha }}
+          ref: ${{ github.event.inputs.commit_sha }}
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -180,7 +180,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: godotengine/godot
-          ref: ${{ input.commit_sha }}
+          ref: ${{ github.event.inputs.commit_sha }}
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
