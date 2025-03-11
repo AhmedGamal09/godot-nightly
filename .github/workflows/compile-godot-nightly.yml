@@ -1,12 +1,13 @@
 name: Compile Godot
 
-on: workflow_dispatch
-  inputs:
-    commit_sha:
-      description: 'commit to build'
-      required: false
-      type: string
-      default: 'master'
+on: 
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'commit to build'
+        required: false
+        type: string
+        default: 'master'
 
 jobs:
   compile-windows-editor:
