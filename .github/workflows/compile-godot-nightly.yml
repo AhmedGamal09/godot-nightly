@@ -67,7 +67,7 @@ jobs:
 
       - name: "[Windows] Compile Godot..."        
         run: |
-          scons platform=windows lto=full arch=x86_64 production=yes use_mingw=yes angle_libs=deps/angle target=editor
+          scons platform=windows lto=full arch=x86_64 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle target=editor
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -133,10 +133,10 @@ jobs:
 
       - name: Build Windows Templates
         run: |
-          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=deps/angle target=template_debug
-          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=deps/angle target=template_release
-          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=deps/angle d3d12=yes target=template_debug
-          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=deps/angle target=template_release
+          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle target=template_debug
+          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle target=template_release
+          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle d3d12=yes target=template_debug
+          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle target=template_release
 
       - name: Copy Godot binaries
         shell: bash
