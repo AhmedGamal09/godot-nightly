@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Setup mingwa
+      - name: Setup MinGW
         uses: egor-tensin/setup-mingw@v2
         with: 
           platform: x64
@@ -44,15 +44,6 @@ jobs:
           unzip -o angle32.zip && rm angle32.zip
           popd
 
-          # Mesa (Windows MinGW binaries)
-          mkdir -p deps/mesa
-          pushd deps/mesa
-          curl -L -o mesa.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
-          curl -L -o mesa32.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_32-gcc-release.zip
-          unzip -o mesa.zip && rm mesa.zip
-          unzip -o mesa32.zip && rm mesa32.zip
-          popd
-
           echo "Missing Swappy libraries, downloading them."
           mkdir -p thirdparty/swappy-frame-pacing
           pushd thirdparty/swappy-frame-pacing
@@ -65,14 +56,10 @@ jobs:
         run: |
           echo "ANGLE libraries:"
           realpath deps/angle/*
-          echo "Mesa libraries:"
-          realpath deps/mesa/*
 
       - name: Install dependencies
         run: |
           pip3 install scons
-          python ./misc/scripts/install_d3d12_sdk_windows.py
-
           # Add other Windows dependencies here if needed
 
           
@@ -80,7 +67,7 @@ jobs:
 
       - name: "[Windows] Compile Godot..."        
         run: |
-          scons platform=windows lto=full arch=x86_64 production=yes use_mingw=yes angle_libs=/home/runner/work/godot-nightly/godot-nightly/deps/angle mesa_libs=/home/runner/work/godot-nightly/godot-nightly/deps/mesa d3d12=yes target=editor -j4
+          scons platform=windows lto=full arch=x86_64 production=yes use_mingw=yes angle_libs=deps/angle target=editor
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -124,15 +111,6 @@ jobs:
           unzip -o angle32.zip && rm angle32.zip
           popd
 
-          # Mesa (Windows MinGW binaries)
-          mkdir -p deps/mesa
-          pushd deps/mesa
-          curl -L -o mesa.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_64-gcc-release.zip
-          curl -L -o mesa32.zip https://github.com/godotengine/godot-nir-static/releases/download/23.1.9-1/godot-nir-static-x86_32-gcc-release.zip
-          unzip -o mesa.zip && rm mesa.zip
-          unzip -o mesa32.zip && rm mesa32.zip
-          popd
-
           echo "Missing Swappy libraries, downloading them."
           mkdir -p thirdparty/swappy-frame-pacing
           pushd thirdparty/swappy-frame-pacing
@@ -145,24 +123,20 @@ jobs:
         run: |
           echo "ANGLE libraries:"
           realpath deps/angle/*
-          echo "Mesa libraries:"
-          realpath deps/mesa/*
 
       - name: Install dependencies
         run: |
           pip3 install scons
-          python ./misc/scripts/install_d3d12_sdk_windows.py
-
           # Add other Windows dependencies here if needed
           
       #- uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build Windows Templates
         run: |
-          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/home/runner/work/godot-nightly/godot-nightly/deps/angle mesa_libs=/home/runner/work/godot-nightly/godot-nightly/deps/mesa d3d12=yes target=template_debug -j4
-          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=/home/runner/work/godot-nightly/godot-nightly/deps/angle mesa_libs=/home/runner/work/godot-nightly/godot-nightly/deps/mesa d3d12=yes target=template_release -j4
-          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=/home/runner/work/godot-nightly/godot-nightly/deps/angle mesa_libs=/home/runner/work/godot-nightly/godot-nightly/deps/mesa d3d12=yes target=template_debug -j4
-          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=/home/runner/work/godot-nightly/godot-nightly/deps/angle mesa_libs=/home/runner/work/godot-nightly/godot-nightly/deps/mesa d3d12=yes target=template_release -j4
+          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=deps/angle target=template_debug
+          scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=deps/angle target=template_release
+          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=deps/angle d3d12=yes target=template_debug
+          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=deps/angle target=template_release
 
       - name: Copy Godot binaries
         shell: bash
@@ -185,11 +159,18 @@ jobs:
         with:
           name: godot-windows-templates-${{ github.sha }}
           path: |
-            bin/
+            bin/windows_release_x86_64.exe
+            bin/windows_debug_x86_64.exe
+            bin/windows_release_x86_32.exe
+            bin/windows_debug_x86_32.exe
+            bin/windows_release_x86_64_console.exe
+            bin/windows_debug_x86_64_console.exe
+            bin/windows_release_x86_32_console.exe
+            bin/windows_debug_x86_32_console.exe
 
   compile-android:
-    name: Compile Android Editor & Templates
-    runs-on: macos-latest
+    name: Compile Android Templates
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Godot repository
