@@ -170,7 +170,7 @@ jobs:
 
   compile-android:
     name: Compile Android Templates
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout Godot repository
