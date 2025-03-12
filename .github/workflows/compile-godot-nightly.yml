@@ -135,7 +135,7 @@ jobs:
         run: |
           scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle target=template_debug
           scons lto=full platform=windows arch=x86_64 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle target=template_release
-          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle d3d12=yes target=template_debug
+          scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle target=template_debug
           scons lto=full platform=windows arch=x86_32 production=yes use_mingw=yes angle_libs=${{ github.workspace }}/deps/angle target=template_release
 
       - name: Copy Godot binaries
