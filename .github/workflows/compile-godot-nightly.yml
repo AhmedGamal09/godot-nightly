@@ -205,7 +205,7 @@ jobs:
 
 
       - name: Setup Android SDK/NDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3.2.2
         with:
           ndk-version: 23.2.8568313
           cmdline-tools-version: 9.0
@@ -215,9 +215,10 @@ jobs:
           yes | sdkmanager --licenses
           sdkmanager \
             "build-tools;34.0.0" \
+            "cmdline-tools;latest" \
             "platform-tools" \
             "platforms;android-34" \
-            "cmake;3.22.1" \
+            "cmake;3.10.2.4988404" \
             "ndk;23.2.8568313"
 
       - name: Install dependencies
